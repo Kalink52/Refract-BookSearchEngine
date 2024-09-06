@@ -1,33 +1,24 @@
 //TODO use User controller js as a guide here????
 const typeDefs = `
 type User {
-    _id
+    _id: ID,
     username: String,
     email: String,
-    password: String
-    bookCount:
-    savedBooks:[Book]
-}
+    password: String,
 
-type Book:
-    bookId 
-    authors
-    description
-    title
-    image
-
-type Auth{
-    token: String,
-    user: User
 }
 
 type Query {
-    me: User
+    users: [User],
+    me(userId:String): User,
     
   }
-type Mutation{
-    createUser(username:String!, email:String!, password: String!): User
-}
+
+type Mutation {
+    createUser(username:String!, email:String!, password:String!): User,
+
+  }
+
 `;
 
 module.exports = typeDefs;

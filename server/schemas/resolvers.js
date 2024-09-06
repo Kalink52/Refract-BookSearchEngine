@@ -1,22 +1,20 @@
 const { User } = require("../models");
 
-const { signToken } = require('../utils/auth');
+const { signToken } = require("../utils/auth");
 const resolvers = {
   Query: {
-    //TODO
     users: async () => {
-      return User.find({})
-},
+      return User.find({});
+    },
+    me: async (_, { userId }) => {
+      return User.findOne({ _id: userId });
+    },
+  },
   Mutation: {
-//TODO
+    // TODO
     createUser: async (_, { username, email, password }) => {
-      const user = await User.create(body);
-  
-      if (!user) {
-        return res.status(400).json({ message: 'Something is wrong!' });
-      }
-      const token = signToken(user);
-      res.json({ token, user });
+      const user = await User.create({ username, email, password });
+      return user;
     },
     // updateUser: async (_, { _id, username, email, password }) => {
     //   const updatedUser = await User.findByIdAndUpdate(_id, { username, email, password }, { new: true });
@@ -27,6 +25,5 @@ const resolvers = {
     //   return deletedUser;
     // },
   },
-  }
-}
-module.exports = resolvers
+};
+module.exports = resolvers;
