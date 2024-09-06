@@ -5,8 +5,9 @@ const path = require("path");
 
 const { typeDefs, resolvers } = require("./schemas");
 const db = require("./config/connection");
-
-// const routes = require("./routes"); removed for now
+const { authMiddleware } = require("./utils/auth");
+//TODO
+// *server.js: Implement the Apollo Server and apply it to the Express server as middleware.
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -17,21 +18,18 @@ const startApolloServer = async () => {
 
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
+  app.use("/graphql", expressMiddleware(server,
+    //   { context: authMiddleware }
+    //! Context creation failed Cannot read properties of undefined (reading 'token')
+    ));
 
-  // if (process.env.NODE_ENV === 'production') {
-  //   app.use(express.static(path.join(__dirname, '../client/dist')));
-
-  //   app.get('*', (req, res) => {
-  //     res.sendFile(path.join(__dirname, '../client/dist/index.html'));
-  //   });
-  // }
-  // ! above is the one from class content
-  //? below is the one that was already here
   if (process.env.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "../client/build")));
-  }
+    app.use(express.static(path.join(__dirname, "../client/dist")));
 
-  app.use("/graphql", expressMiddleware(server));
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+    });
+  }
 
   db.once("open", () => {
     app.listen(PORT, () =>

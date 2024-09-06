@@ -7,14 +7,15 @@ type Query {
   }
 
 type Mutation {
+    login(email:String,password:String):Auth
     addUser(username:String!, email:String!, password:String!): User,
-    saveBook(bookDetails:BookDetailsInput): User,
+    saveBook(_id:ID, bookDetails:BookDetailsInput): User,
     removeBook(bookId:String):User
   }
 
 input BookDetailsInput{
     bookId: String,
-    authors: String,
+    authors: [String],
     description: String,
     title: String,
     image: String,
@@ -32,11 +33,15 @@ type User {
 
 type Book {
     bookId: String,
-    authors: String,
+    authors: [String],
     description: String,
     title: String,
     image: String,
     link: String
+}
+type Auth {
+    token: ID!,
+    user: User, 
 }
 `;
 
