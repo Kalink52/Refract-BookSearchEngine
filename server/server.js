@@ -11,17 +11,25 @@ const { authMiddleware } = require("./utils/auth");
 
 const PORT = process.env.PORT || 3001;
 const app = express();
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+});
 
 const startApolloServer = async () => {
   await server.start();
 
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
-  app.use("/graphql", expressMiddleware(server,
-    //   { context: authMiddleware }
-    //! Context creation failed Cannot read properties of undefined (reading 'token')
-    ));
+  app.use(
+    "/graphql",
+    expressMiddleware(
+      server,
+      {
+        context: authMiddleware,
+      }
+    )
+  );
 
   if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../client/dist")));

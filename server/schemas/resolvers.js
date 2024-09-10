@@ -6,8 +6,11 @@ const resolvers = {
     users: async () => {
       return User.find({});
     },
-    me: async (_, { userId }) => {
-      return User.findOne({ _id: userId });
+    me: async (_, args, context) => {
+      if (context.user) {
+        return User.findOne({ _id: context.user._id }).populate("");
+      }
+      throw AuthenticationError;
     },
   },
   Mutation: {
@@ -30,8 +33,7 @@ const resolvers = {
       const user = await User.create({ username, email, password });
       return user;
     },
-    //TODO MAKE WORK WITH FRONTEND
-    saveBook: async (_, {_id, bookDetails}) => {
+    saveBook: async (_, { _id, bookDetails }) => {
       const updatedUser = await User.findByIdAndUpdate(
         { _id: _id },
         { $addToSet: { savedBooks: bookDetails } },
@@ -41,10 +43,10 @@ const resolvers = {
     },
 
     //TODO MAKE WORK WITH FRONTEND
-    removeBook: async (_, { user, params }) => {
+    removeBook: async (_, { bookId }, context) => {
       const updatedUser = await User.findOneAndUpdate(
-        { _id: user._id },
-        { $pull: { savedBooks: { bookId: params.bookId } } },
+        { _id: context.user._id },
+        { $pull: { savedBooks: { bookId: bookId } } },
         { new: true }
       );
       return updatedUser;
